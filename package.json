@@ -1,0 +1,51 @@
+{
+  "name": "drug_inventory",
+  "version": "1.0.0",
+  "description": "Drug Inventory and Supply Chain Tracking System",
+  "main": "server/server.js",
+  "scripts": {
+    "start": "node server/server.js",
+    "server": "nodemon server/server.js",
+    "client": "cd client && npm start",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "install-client": "cd client && npm install",
+    "build": "cd client && npm run build",
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix client && npm run build --prefix client",
+    "seed-medicines": "node server/scripts/seedMedicines.js",
+    "create-admin": "node server/scripts/createAdminUser.js",
+    "setup-db": "node server/setupLocalMongoDB.js",
+    "setup": "node setup.js",
+    "check-api": "node check_connection.js",
+    "restart": "restart.bat",
+    "fix": "node fix-connection.js",
+    "ensure-images": "node ensure-images.js",
+    "copy-images": "node copy-images.js",
+    "reset": "complete-reset.bat"
+  },
+  "keywords": [
+    "mern",
+    "inventory",
+    "supply-chain",
+    "drugs",
+    "medicine",
+    "ml"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.8.4",
+    "bcryptjs": "^2.4.3",
+    "concurrently": "^7.6.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "express-fileupload": "^1.5.1",
+    "jsonwebtoken": "^8.5.1",
+    "mathjs": "^14.4.0",
+    "mongodb-memory-server": "^10.1.4",
+    "mongoose": "^6.8.0",
+    "multer": "^1.4.5-lts.1",
+    "node-fetch": "^3.3.2",
+    "nodemon": "^2.0.20"
+  }
+}
