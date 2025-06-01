@@ -6,7 +6,8 @@ const {
   updateOrderStatus,
   updateOrderLocation,
   uploadPrescription,
-  verifyPrescription
+  verifyPrescription,
+  updatePaymentStatus
 } = require('../controllers/order.controller');
 
 const router = express.Router();
@@ -19,7 +20,7 @@ router.use(protect);
 router
   .route('/')
   .get(getOrders)
-  .post(authorize('consumer'), createOrder);
+  .post(createOrder);
 
 router
   .route('/:id')
@@ -27,7 +28,7 @@ router
 
 router
   .route('/:id/status')
-  .put(authorize('retailer', 'admin'), updateOrderStatus);
+  .put(authorize('admin'), updateOrderStatus);
 
 router
   .route('/:id/location')
@@ -40,5 +41,9 @@ router
 router
   .route('/:id/verify-prescription')
   .put(authorize('retailer', 'admin'), verifyPrescription);
+
+router
+  .route('/:id/payment')
+  .put(updatePaymentStatus);
 
 module.exports = router; 

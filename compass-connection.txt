@@ -1,0 +1,32 @@
+To connect to your database in MongoDB Compass:
+
+1. Copy this EXACT connection string:
+mongodb+srv://balvirsidhu008:harry2502@cluster1.ou706sb.mongodb.net/drug_inventory?retryWrites=true&w=majority
+
+2. In MongoDB Compass:
+   - Click "New Connection"
+   - Paste the connection string
+   - Click "Connect"
+   - Look for "drug_inventory" database
+   - Click on "users" collection
+   - Click "Find" button
+
+If you still can't connect:
+1. Try this alternative connection string:
+mongodb+srv://balvirsidhu008:harry2502@cluster1.ou706sb.mongodb.net/
+
+2. Then after connecting:
+   - Click on "drug_inventory" database
+   - Click on "users" collection
+   - Click "Find" button
+
+If neither works, try these troubleshooting steps:
+1. Clear MongoDB Compass cache:
+   - Go to View > Toggle Developer Tools
+   - Click Application tab
+   - Click Clear Storage
+   - Click "Clear site data"
+   - Restart MongoDB Compass
+
+2. Make sure you're using the latest version of MongoDB Compass:
+   - Download from: https://www.mongodb.com/try/download/compass 

@@ -7,8 +7,8 @@ const fileupload = require('express-fileupload');
 const errorHandler = require('./middleware/error');
 const fs = require('fs');
 
-// Load environment variables
-dotenv.config();
+// Load environment variables from server/.env
+dotenv.config({ path: path.join(__dirname, '.env') });
 
 // Initialize Express app
 const app = express();
@@ -16,7 +16,12 @@ const app = express();
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors());
+
+// Configure CORS
+app.use(cors({
+  origin: 'http://localhost:3000',
+  credentials: true
+}));
 
 // File uploading
 app.use(fileupload({
@@ -79,10 +84,36 @@ app.use('/api/analytics', analyticsRoutes);
 // Error handling middleware
 app.use(errorHandler);
 
-// MongoDB connection
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log('MongoDB connected successfully'))
-  .catch(err => console.error('MongoDB connection error:', err));
+// MongoDB connectioN
+mongoose.set('strictQuery', false);
+console.log('Attempting to connect to MongoDB...');
+console.log('MongoDB URI:', process.env.MONGO_URI);
+
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+})
+.then(() => {
+  console.log('✅ MongoDB connected successfully');
+  console.log('Connected to database:', mongoose.connection.db.databaseName);
+  // List all collections
+  mongoose.connection.db.listCollections().toArray((err, collections) => {
+    if (err) {
+      console.error('Error listing collections:', err);
+    } else {
+      console.log('Available collections:', collections.map(c => c.name));
+    }
+  });
+})
+.catch(err => {
+  console.error('❌ MongoDB connection error:', err);
+  console.error('Error details:', {
+    name: err.name,
+    message: err.message,
+    code: err.code,
+    codeName: err.codeName
+  });
+});
 
 // Serve static assets in production
 if (process.env.NODE_ENV === 'production') {
@@ -95,7 +126,21 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 // Define PORT
-const PORT = process.env.PORT || 5001;
+const PORT = process.env.PORT || 5002;
 
-// Start server
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`)); 
+// Start server with error handling
+const startServer = () => {
+  const server = app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+    console.log(`Environment: ${process.env.NODE_ENV}`);
+  }).on('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+      console.log(`Port ${PORT} is busy, trying ${PORT + 1}...`);
+      startServer(PORT + 1);
+    } else {
+      console.error('Server error:', err);
+    }
+  });
+};
+
+startServer(); 

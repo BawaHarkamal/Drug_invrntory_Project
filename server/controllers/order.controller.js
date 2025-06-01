@@ -8,50 +8,9 @@ const path = require('path');
 // @route   GET /api/orders
 // @access  Private
 exports.getOrders = asyncHandler(async (req, res, next) => {
-  let query;
-
-  // Find all orders for admins
-  if (req.user.role === 'admin') {
-    query = Order.find()
-      .populate({
-        path: 'consumer',
-        select: 'name email phone'
-      })
-      .populate({
-        path: 'retailer',
-        select: 'name email phone'
-      })
-      .populate({
-        path: 'items.medicine',
-        select: 'name price image'
-      });
-  } 
-  // Find orders by role
-  else {
-    if (req.user.role === 'consumer') {
-      query = Order.find({ consumer: req.user.id })
-        .populate({
-          path: 'retailer',
-          select: 'name email phone'
-        })
-        .populate({
-          path: 'items.medicine',
-          select: 'name price image'
-        });
-    } else if (req.user.role === 'retailer') {
-      query = Order.find({ retailer: req.user.id })
-        .populate({
-          path: 'consumer',
-          select: 'name email phone'
-        })
-        .populate({
-          path: 'items.medicine',
-          select: 'name price image'
-        });
-    }
-  }
-
-  const orders = await query;
+  const orders = await Order.find({ user: req.user.id })
+    .populate('items.medicine', 'name price image')
+    .sort('-createdAt');
 
   res.status(200).json({
     success: true,
@@ -65,37 +24,15 @@ exports.getOrders = asyncHandler(async (req, res, next) => {
 // @access  Private
 exports.getOrder = asyncHandler(async (req, res, next) => {
   const order = await Order.findById(req.params.id)
-    .populate({
-      path: 'consumer',
-      select: 'name email phone'
-    })
-    .populate({
-      path: 'retailer',
-      select: 'name email phone'
-    })
-    .populate({
-      path: 'items.medicine',
-      select: 'name price image'
-    });
+    .populate('items.medicine', 'name price image');
 
   if (!order) {
-    return next(
-      new ErrorResponse(`Order not found with id of ${req.params.id}`, 404)
-    );
+    return next(new ErrorResponse(`Order not found with id ${req.params.id}`, 404));
   }
 
-  // Make sure the user is related to the order
-  if (
-    order.consumer._id.toString() !== req.user.id &&
-    order.retailer._id.toString() !== req.user.id &&
-    req.user.role !== 'admin'
-  ) {
-    return next(
-      new ErrorResponse(
-        `User ${req.user.id} is not authorized to view this order`,
-        401
-      )
-    );
+  // Make sure user owns order
+  if (order.user.toString() !== req.user.id && req.user.role !== 'admin') {
+    return next(new ErrorResponse('Not authorized to access this order', 401));
   }
 
   res.status(200).json({
@@ -106,43 +43,26 @@ exports.getOrder = asyncHandler(async (req, res, next) => {
 
 // @desc    Create new order
 // @route   POST /api/orders
-// @access  Private (Consumer)
+// @access  Private
 exports.createOrder = asyncHandler(async (req, res, next) => {
-  req.body.consumer = req.user.id;
+  const { items, shippingAddress, paymentMethod } = req.body;
 
-  // Check if order items exist and have valid quantities
-  if (!req.body.items || req.body.items.length === 0) {
-    return next(new ErrorResponse('Please add at least one item to order', 400));
-  }
-
+  // Calculate total amount and validate stock
   let totalAmount = 0;
-  for (const item of req.body.items) {
+  for (const item of items) {
     const medicine = await Medicine.findById(item.medicine);
-
     if (!medicine) {
-      return next(
-        new ErrorResponse(`Medicine not found with id of ${item.medicine}`, 404)
-      );
+      return next(new ErrorResponse(`Medicine not found with id ${item.medicine}`, 404));
     }
-
-    // Check if enough stock is available
-    if (medicine.stockQuantity < item.quantity) {
-      return next(
-        new ErrorResponse(
-          `Insufficient stock for ${medicine.name}, only ${medicine.stockQuantity} available`,
-          400
-        )
-      );
-    }
-
-    // Set retailer from medicine
-    req.body.retailer = medicine.retailer;
-
-    // Calculate price for this item
-    item.price = medicine.price;
     
-    // Add to total amount
-    totalAmount += item.price * item.quantity;
+    // Check stock availability
+    if (medicine.stockQuantity < item.quantity) {
+      return next(new ErrorResponse(`Insufficient stock for ${medicine.name}`, 400));
+    }
+
+    // Calculate item price
+    item.price = medicine.price * item.quantity;
+    totalAmount += item.price;
 
     // Update stock quantity
     await Medicine.findByIdAndUpdate(item.medicine, {
@@ -150,14 +70,17 @@ exports.createOrder = asyncHandler(async (req, res, next) => {
     });
   }
 
-  // Set total amount
-  req.body.totalAmount = totalAmount;
-
-  // Generate tracking ID
-  req.body.trackingId = 'TRK' + Date.now().toString().slice(-8);
-
   // Create order
-  const order = await Order.create(req.body);
+  const order = await Order.create({
+    user: req.user.id,
+    items,
+    totalAmount,
+    shippingAddress,
+    paymentMethod
+  });
+
+  // Populate medicine details
+  await order.populate('items.medicine', 'name price');
 
   res.status(201).json({
     success: true,
@@ -167,43 +90,54 @@ exports.createOrder = asyncHandler(async (req, res, next) => {
 
 // @desc    Update order status
 // @route   PUT /api/orders/:id/status
-// @access  Private (Retailer, Admin)
+// @access  Private (Admin)
 exports.updateOrderStatus = asyncHandler(async (req, res, next) => {
-  const { status } = req.body;
+  const { orderStatus } = req.body;
 
-  if (!status) {
-    return next(new ErrorResponse('Please provide a status', 400));
-  }
-
-  let order = await Order.findById(req.params.id);
+  const order = await Order.findById(req.params.id);
 
   if (!order) {
-    return next(
-      new ErrorResponse(`Order not found with id of ${req.params.id}`, 404)
-    );
+    return next(new ErrorResponse(`Order not found with id ${req.params.id}`, 404));
   }
 
-  // Make sure user is order retailer or admin
-  if (
-    order.retailer.toString() !== req.user.id &&
-    req.user.role !== 'admin'
-  ) {
-    return next(
-      new ErrorResponse(
-        `User ${req.user.id} is not authorized to update this order`,
-        401
-      )
-    );
+  // Only admin can update order status
+  if (req.user.role !== 'admin') {
+    return next(new ErrorResponse('Not authorized to update order status', 401));
   }
 
-  order = await Order.findByIdAndUpdate(
-    req.params.id,
-    { status },
-    {
-      new: true,
-      runValidators: true
-    }
-  );
+  order.orderStatus = orderStatus;
+  await order.save();
+
+  res.status(200).json({
+    success: true,
+    data: order
+  });
+});
+
+// @desc    Update payment status
+// @route   PUT /api/orders/:id/payment
+// @access  Private
+exports.updatePaymentStatus = asyncHandler(async (req, res, next) => {
+  const { paymentStatus } = req.body;
+
+  const order = await Order.findById(req.params.id);
+
+  if (!order) {
+    return next(new ErrorResponse(`Order not found with id ${req.params.id}`, 404));
+  }
+
+  // Make sure user owns order
+  if (order.user.toString() !== req.user.id && req.user.role !== 'admin') {
+    return next(new ErrorResponse('Not authorized to update this order', 401));
+  }
+
+  // Update payment status
+  order.paymentStatus = paymentStatus;
+  if (paymentStatus === 'completed') {
+    order.orderStatus = 'confirmed';
+  }
+
+  await order.save();
 
   res.status(200).json({
     success: true,

@@ -1,0 +1,152 @@
+{
+  "medicines": [
+    {
+      "id": "PCM-2023-001",
+      "name": "Paracetamol 500mg",
+      "description": "Common pain reliever and fever reducer. Used for headaches, muscle aches, arthritis, backache, toothaches, colds, and fevers.",
+      "category": "Analgesics",
+      "price": 5.99,
+      "stockQuantity": 1000,
+      "expiryDate": "2025-12-31",
+      "image": "paracetamol.jpg",
+      "prescription": false,
+      "manufacturer": {
+        "id": "default-manufacturer",
+        "name": "Demo Manufacturer",
+        "email": "manufacturer@example.com"
+      },
+      "composition": [{ "salt": "Paracetamol", "quantity": "500mg" }],
+      "lowStockThreshold": 100,
+      "batchNumber": "PCM-2023-001",
+      "createdAt": "2023-12-01T00:00:00.000Z"
+    },
+    {
+      "id": "AMX-2023-002",
+      "name": "Amoxicillin 250mg",
+      "description": "Penicillin antibiotic used to treat various bacterial infections including bronchitis, pneumonia, and infections of the ear, nose, throat, skin, or urinary tract.",
+      "category": "Antibiotics",
+      "price": 12.50,
+      "stockQuantity": 500,
+      "expiryDate": "2025-06-30",
+      "image": "amoxicillin.jpg",
+      "prescription": true,
+      "manufacturer": {
+        "id": "default-manufacturer",
+        "name": "Demo Manufacturer",
+        "email": "manufacturer@example.com"
+      },
+      "composition": [{ "salt": "Amoxicillin trihydrate", "quantity": "250mg" }],
+      "lowStockThreshold": 50,
+      "batchNumber": "AMX-2023-002",
+      "createdAt": "2023-12-01T00:00:00.000Z"
+    },
+    {
+      "id": "MTF-2023-003",
+      "name": "Metformin 500mg",
+      "description": "Oral diabetes medicine that helps control blood sugar levels. First-line medication for the treatment of type 2 diabetes.",
+      "category": "Antidiabetic",
+      "price": 8.75,
+      "stockQuantity": 750,
+      "expiryDate": "2025-08-15",
+      "image": "metformin.jpg",
+      "prescription": true,
+      "manufacturer": {
+        "id": "default-manufacturer",
+        "name": "Demo Manufacturer",
+        "email": "manufacturer@example.com"
+      },
+      "composition": [{ "salt": "Metformin hydrochloride", "quantity": "500mg" }],
+      "lowStockThreshold": 75,
+      "batchNumber": "MTF-2023-003",
+      "createdAt": "2023-12-01T00:00:00.000Z"
+    },
+    {
+      "id": "LSP-2023-004",
+      "name": "Lisinopril 10mg",
+      "description": "ACE inhibitor used to treat high blood pressure (hypertension) and heart failure. Also improves survival after a heart attack.",
+      "category": "Cardiovascular",
+      "price": 15.99,
+      "stockQuantity": 300,
+      "expiryDate": "2024-11-30",
+      "image": "lisinopril.jpg",
+      "prescription": true,
+      "manufacturer": {
+        "id": "default-manufacturer",
+        "name": "Demo Manufacturer",
+        "email": "manufacturer@example.com"
+      },
+      "composition": [{ "salt": "Lisinopril", "quantity": "10mg" }],
+      "lowStockThreshold": 30,
+      "batchNumber": "LSP-2023-004",
+      "createdAt": "2023-12-01T00:00:00.000Z"
+    },
+    {
+      "id": "SLB-2023-005",
+      "name": "Salbutamol Inhaler",
+      "description": "Bronchodilator that relaxes muscles in the airways and increases air flow to the lungs. Used to treat asthma and COPD.",
+      "category": "Respiratory",
+      "price": 22.50,
+      "stockQuantity": 200,
+      "expiryDate": "2025-04-30",
+      "image": "salbutamol.jpg",
+      "prescription": true,
+      "manufacturer": {
+        "id": "default-manufacturer",
+        "name": "Demo Manufacturer",
+        "email": "manufacturer@example.com"
+      },
+      "composition": [{ "salt": "Salbutamol sulphate", "quantity": "100mcg/dose" }],
+      "lowStockThreshold": 20,
+      "batchNumber": "SLB-2023-005",
+      "createdAt": "2023-12-01T00:00:00.000Z"
+    },
+    {
+      "id": "OMP-2023-006",
+      "name": "Omeprazole 20mg",
+      "description": "Proton pump inhibitor that decreases the amount of acid produced in the stomach. Used to treat various digestive conditions.",
+      "category": "Gastrointestinal",
+      "price": 9.99,
+      "stockQuantity": 400,
+      "expiryDate": "2025-10-15",
+      "image": "omeprazole.jpg",
+      "prescription": false,
+      "manufacturer": {
+        "id": "default-manufacturer",
+        "name": "Demo Manufacturer",
+        "email": "manufacturer@example.com"
+      },
+      "composition": [{ "salt": "Omeprazole", "quantity": "20mg" }],
+      "lowStockThreshold": 40,
+      "batchNumber": "OMP-2023-006",
+      "createdAt": "2023-12-01T00:00:00.000Z"
+    },
+    {
+      "id": "IBP-2023-007",
+      "name": "Ibuprofen 400mg",
+      "description": "Nonsteroidal anti-inflammatory drug (NSAID) used to reduce fever and treat pain or inflammation. Common for arthritis, menstrual cramps, and other conditions.",
+      "category": "Analgesics",
+      "price": 6.50,
+      "stockQuantity": 800,
+      "expiryDate": "2025-09-20",
+      "image": "ibuprofen.jpg",
+      "prescription": false,
+      "composition": [{ "salt": "Ibuprofen", "quantity": "400mg" }],
+      "lowStockThreshold": 80,
+      "batchNumber": "IBP-2023-007"
+    },
+    {
+      "id": "ATV-2023-008",
+      "name": "Atorvastatin 10mg",
+      "description": "Statin medication used to prevent cardiovascular disease in those at high risk and treat abnormal lipid levels. Helps lower cholesterol and triglycerides.",
+      "category": "Cardiovascular",
+      "price": 18.75,
+      "stockQuantity": 350,
+      "expiryDate": "2025-05-31",
+      "image": "atorvastatin.jpg",
+      "prescription": true,
+      "composition": [{ "salt": "Atorvastatin calcium", "quantity": "10mg" }],
+      "lowStockThreshold": 35,
+      "batchNumber": "ATV-2023-008"
+    }
+  ]
+} 

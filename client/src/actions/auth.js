@@ -51,23 +51,59 @@ export const loadUser = () => async dispatch => {
 };
 
 // Register User
-export const register = (name, email, password, role) => async dispatch => {
+export const register = (userData) => async dispatch => {
   try {
-    const res = await api.post('/auth/register', { name, email, password, role });
+    console.log('Attempting registration with:', { email: userData.email });
+    
+    // Try the standard API first
+    try {
+      const res = await api.post('/auth/register', userData);
+      console.log('Registration response:', res);
 
-    dispatch({
-      type: REGISTER_SUCCESS,
-      payload: res.data
-    });
+      if (!res.data) {
+        throw new Error('Invalid response format from server');
+      }
 
-    dispatch(loadUser());
+      dispatch({
+        type: REGISTER_SUCCESS,
+        payload: res.data
+      });
+
+      dispatch(loadUser());
+      return;
+    } catch (apiError) {
+      console.error('Standard API registration failed, trying direct:', apiError);
+      
+      // If standard API fails, try direct connection
+      const directRes = await directApi.post('/auth/register', userData);
+      
+      console.log('Direct registration response:', directRes);
+      
+      if (!directRes.data) {
+        throw new Error('Invalid response format from direct server');
+      }
+      
+      dispatch({
+        type: REGISTER_SUCCESS,
+        payload: directRes.data
+      });
+      
+      dispatch(loadUser());
+      return;
+    }
   } catch (err) {
     console.error('Registration error:', err);
     
-    const errors = err.response?.data?.errors;
+    if (err.response && err.response.data && err.response.data.error) {
+      const errors = err.response.data.error;
 
-    if (errors) {
-      errors.forEach(error => dispatch(setAlert(error.msg, 'error')));
+      if (Array.isArray(errors)) {
+        errors.forEach(error => dispatch(setAlert(error, 'error')));
+      } else {
+        dispatch(setAlert(errors, 'error'));
+      }
+    } else {
+      dispatch(setAlert(err.message || 'Registration failed. Please try again.', 'error'));
     }
 
     dispatch({

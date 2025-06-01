@@ -5,16 +5,17 @@ const {
   createMedicine,
   updateMedicine,
   deleteMedicine,
-  medicinePhotoUpload,
   searchMedicines
-} = require('../controllers/medicine.controller');
+} = require('../controllers/medicineController');
 
 const router = express.Router();
 
 const { protect, authorize } = require('../middleware/auth');
 
+// Search route
 router.route('/search').get(searchMedicines);
 
+// Main routes
 router
   .route('/')
   .get(getMedicines)
@@ -25,13 +26,5 @@ router
   .get(getMedicine)
   .put(protect, authorize('manufacturer', 'retailer', 'admin'), updateMedicine)
   .delete(protect, authorize('manufacturer', 'admin'), deleteMedicine);
-
-router
-  .route('/:id/photo')
-  .put(
-    protect,
-    authorize('manufacturer', 'retailer', 'admin'),
-    medicinePhotoUpload
-  );
 
 module.exports = router; 

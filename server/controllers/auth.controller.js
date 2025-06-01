@@ -6,19 +6,46 @@ const asyncHandler = require('../middleware/async');
 // @route   POST /api/auth/register
 // @access  Public
 exports.register = asyncHandler(async (req, res, next) => {
+  console.log('Registration attempt with data:', req.body);
+  
   const { name, email, password, role, phone, address } = req.body;
 
-  // Create user
-  const user = await User.create({
-    name,
-    email,
-    password,
-    role,
-    phone,
-    address
-  });
+  try {
+    // Create user
+    const user = await User.create({
+      name,
+      email,
+      password,
+      role,
+      phone,
+      address
+    });
 
-  sendTokenResponse(user, 200, res);
+    console.log('User created successfully:', {
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role
+    });
+
+    // Verify user exists in database
+    const verifyUser = await User.findById(user._id);
+    console.log('Verification query result:', verifyUser ? 'User found in database' : 'User NOT found in database');
+    if (verifyUser) {
+      console.log('Database verification successful. User details:', {
+        id: verifyUser._id,
+        name: verifyUser.name,
+        email: verifyUser.email,
+        role: verifyUser.role,
+        createdAt: verifyUser.createdAt
+      });
+    }
+
+    sendTokenResponse(user, 200, res);
+  } catch (error) {
+    console.error('Error creating user:', error);
+    next(error);
+  }
 });
 
 // @desc    Login user

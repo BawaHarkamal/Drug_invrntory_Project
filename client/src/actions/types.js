@@ -23,6 +23,7 @@ export const SEARCH_MEDICINES = 'SEARCH_MEDICINES';
 export const CLEAR_MEDICINES = 'CLEAR_MEDICINES';
 
 // Order Types
+export const CREATE_ORDER = 'CREATE_ORDER';
 export const GET_ORDERS = 'GET_ORDERS';
 export const GET_ORDER = 'GET_ORDER';
 export const ADD_ORDER = 'ADD_ORDER';
@@ -32,6 +33,7 @@ export const UPLOAD_PRESCRIPTION = 'UPLOAD_PRESCRIPTION';
 export const VERIFY_PRESCRIPTION = 'VERIFY_PRESCRIPTION';
 export const ORDER_ERROR = 'ORDER_ERROR';
 export const CLEAR_ORDER = 'CLEAR_ORDER';
+export const UPDATE_PAYMENT_STATUS = 'UPDATE_PAYMENT_STATUS';
 
 // Inventory Types
 export const GET_MEDICINE_REQUESTS = 'GET_MEDICINE_REQUESTS';

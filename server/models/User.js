@@ -47,14 +47,32 @@ const UserSchema = new mongoose.Schema({
   }
 });
 
+// Log document before saving
+UserSchema.pre('save', function(next) {
+  console.log('Attempting to save user:', {
+    name: this.name,
+    email: this.email,
+    role: this.role
+  });
+  next();
+});
+
 // Encrypt password using bcrypt
 UserSchema.pre('save', async function(next) {
-  if (!this.isModified('password')) {
-    next();
-  }
+  try {
+    if (!this.isModified('password')) {
+      return next();
+    }
 
-  const salt = await bcrypt.genSalt(10);
-  this.password = await bcrypt.hash(this.password, salt);
+    console.log('Hashing password for user:', this.email);
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+    console.log('Password hashed successfully');
+    next();
+  } catch (error) {
+    console.error('Error hashing password:', error);
+    next(error);
+  }
 });
 
 // Sign JWT and return
@@ -72,5 +90,14 @@ UserSchema.methods.getSignedJwtToken = function() {
 UserSchema.methods.matchPassword = async function(enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
+
+// Handle duplicate key errors
+UserSchema.post('save', function(error, doc, next) {
+  if (error.name === 'MongoServerError' && error.code === 11000) {
+    next(new Error('Email address already exists'));
+  } else {
+    next(error);
+  }
+});
 
 module.exports = mongoose.model('User', UserSchema); 

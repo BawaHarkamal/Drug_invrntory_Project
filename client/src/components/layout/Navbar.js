@@ -1,27 +1,55 @@
-import React, { Fragment } from 'react';
-import { Link } from 'react-router-dom';
+import React from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { logout } from '../../actions/auth';
-import { AppBar, Toolbar, Typography, Button, Box, Container } from '@mui/material';
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Button,
+  Container,
+  Box
+} from '@mui/material';
 import LocalPharmacyIcon from '@mui/icons-material/LocalPharmacy';
 
 const Navbar = ({ auth: { isAuthenticated, loading, user }, logout }) => {
   const authLinks = (
     <Box sx={{ display: 'flex', alignItems: 'center' }}>
-      {user && (
-        <Typography variant="body2" sx={{ mr: 2 }}>
-          Welcome, {user.name} ({user.role})
-        </Typography>
-      )}
-      <Button 
-        component={Link} 
-        to="/dashboard" 
-        color="inherit" 
-        sx={{ mr: 1 }}
+      <Button
+        component={RouterLink}
+        to="/dashboard"
+        color="inherit"
+        sx={{ mr: 2 }}
       >
         Dashboard
       </Button>
+      <Button
+        component={RouterLink}
+        to="/orders"
+        color="inherit"
+        sx={{ mr: 2 }}
+      >
+        Orders
+      </Button>
+      <Button
+        component={RouterLink}
+        to="/orders/new"
+        color="inherit"
+        sx={{ mr: 2 }}
+      >
+        New Order
+      </Button>
+      {['admin', 'retailer', 'manufacturer', 'supplier'].includes(user?.role) && (
+        <Button
+          component={RouterLink}
+          to="/ml-dashboard"
+          color="inherit"
+          sx={{ mr: 2 }}
+        >
+          ML Analytics
+        </Button>
+      )}
       <Button 
         onClick={logout} 
         color="inherit"
@@ -33,17 +61,17 @@ const Navbar = ({ auth: { isAuthenticated, loading, user }, logout }) => {
 
   const guestLinks = (
     <Box>
-      <Button 
-        component={Link} 
-        to="/register" 
-        color="inherit" 
-        sx={{ mr: 1 }}
+      <Button
+        component={RouterLink}
+        to="/register"
+        color="inherit"
+        sx={{ mr: 2 }}
       >
         Register
       </Button>
-      <Button 
-        component={Link} 
-        to="/login" 
+      <Button
+        component={RouterLink}
+        to="/login"
         color="inherit"
       >
         Login
@@ -53,26 +81,22 @@ const Navbar = ({ auth: { isAuthenticated, loading, user }, logout }) => {
 
   return (
     <AppBar position="static">
-      <Container>
-        <Toolbar disableGutters>
-          <LocalPharmacyIcon sx={{ mr: 1 }} />
+      <Container maxWidth="lg">
+        <Toolbar>
+          <LocalPharmacyIcon sx={{ mr: 2 }} />
           <Typography
             variant="h6"
-            component={Link}
+            component={RouterLink}
             to="/"
             sx={{
-              mr: 2,
               flexGrow: 1,
-              fontWeight: 700,
-              color: 'inherit',
               textDecoration: 'none',
+              color: 'inherit',
             }}
           >
-            MedSupply Chain
+            Drug Inventory
           </Typography>
-          {!loading && (
-            <Fragment>{isAuthenticated ? authLinks : guestLinks}</Fragment>
-          )}
+          {!loading && (isAuthenticated ? authLinks : guestLinks)}
         </Toolbar>
       </Container>
     </AppBar>
@@ -84,7 +108,7 @@ Navbar.propTypes = {
   auth: PropTypes.object.isRequired
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   auth: state.auth
 });
 

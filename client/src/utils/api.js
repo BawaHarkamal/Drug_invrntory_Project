@@ -70,7 +70,7 @@ api.interceptors.response.use(
 
 // Create a direct API call utility that doesn't rely on the proxy
 // Use current hostname to make it work in both development and production
-const API_BASE_URL = `${window.location.protocol}//${window.location.hostname}:5001/api`;
+const API_BASE_URL = `${window.location.protocol}//${window.location.hostname}:5002/api`;
 console.log(`Direct API Base URL: ${API_BASE_URL}`);
 
 // Create a configured axios instance for direct API calls

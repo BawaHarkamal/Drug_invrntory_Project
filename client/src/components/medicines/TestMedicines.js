@@ -97,7 +97,7 @@ const TestMedicines = () => {
     
     try {
       // Use a direct URL approach without any utility
-      const directUrl = 'http://localhost:5001/api/medicines';
+      const directUrl = 'http://localhost:5002/api/medicines';
       console.log('Fetching medicines directly from:', directUrl);
       
       const response = await axios.get(directUrl, {
@@ -176,7 +176,7 @@ const TestMedicines = () => {
       {activeTab === 1 && (
         <Box sx={{ mb: 2 }}>
           <Typography variant="body2" sx={{ mb: 2 }}>
-            This method directly calls http://localhost:5001/api/medicines without using the proxy
+            This method directly calls http://localhost:5002/api/medicines without using the proxy
           </Typography>
           
           <Button 

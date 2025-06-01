@@ -20,7 +20,8 @@
     "fix": "node fix-connection.js",
     "ensure-images": "node ensure-images.js",
     "copy-images": "node copy-images.js",
-    "reset": "complete-reset.bat"
+    "reset": "complete-reset.bat",
+    "seed-orders": "node server/seeders/dummyOrdersSeeder.js"
   },
   "keywords": [
     "mern",

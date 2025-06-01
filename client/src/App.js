@@ -21,6 +21,14 @@ import NotFound from './components/pages/NotFound';
 import AnalyticsDashboard from './components/dashboard/AnalyticsDashboard';
 import DrugTrends from './components/dashboard/DrugTrends';
 
+// Order Components
+import OrderForm from './components/orders/OrderForm';
+import OrderDetails from './components/orders/OrderDetails';
+import OrderList from './components/orders/OrderList';
+
+// ML Components
+import MLDashboard from './components/ml/MLDashboard';
+
 // Redux Store
 import store from './store';
 import { loadUser } from './actions/auth';
@@ -85,6 +93,26 @@ const App = () => {
             <Route path="/dashboard/drug/:drugId/trends" element={
               <PrivateRoute roles={['admin', 'manager', 'pharmacist']}>
                 <DrugTrends />
+              </PrivateRoute>
+            } />
+            <Route path="/orders" element={
+              <PrivateRoute>
+                <OrderList />
+              </PrivateRoute>
+            } />
+            <Route path="/orders/new" element={
+              <PrivateRoute>
+                <OrderForm />
+              </PrivateRoute>
+            } />
+            <Route path="/orders/:id" element={
+              <PrivateRoute>
+                <OrderDetails />
+              </PrivateRoute>
+            } />
+            <Route path="/ml-dashboard" element={
+              <PrivateRoute roles={['admin', 'retailer', 'manufacturer', 'supplier']}>
+                <MLDashboard />
               </PrivateRoute>
             } />
             <Route path="*" element={<NotFound />} />

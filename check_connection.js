@@ -7,7 +7,7 @@ async function testConnection() {
   // Check server health
   try {
     console.log('\nTesting server health (direct)...');
-    const healthResponse = await axios.get('http://localhost:5001/api/medicines', {
+    const healthResponse = await axios.get('http://localhost:5002/api/medicines', {
       timeout: 5000
     });
     console.log('✅ Server is running and responding!');
@@ -28,7 +28,7 @@ async function testConnection() {
   // Check proxy connectivity
   try {
     console.log('\nTesting proxy connectivity...');
-    const proxyResponse = await axios.get('http://localhost:3001/api/medicines', {
+    const proxyResponse = await axios.get('http://localhost:3000/api/medicines', {
       timeout: 5000
     });
     console.log('✅ Proxy is working correctly!');
